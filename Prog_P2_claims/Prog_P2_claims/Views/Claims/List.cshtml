@@ -1,0 +1,201 @@
+﻿@* @model IEnumerable<Prog_P2_claims.Models.Claims>
+
+@{
+    ViewData["Title"] = "Claims List";
+}
+
+<h2>Claims List</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Lecturer ID</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Period Start</th>
+            <th>Period End</th>
+            <th>Hours Worked</th>
+            <th>Rate per Hour</th>
+            <th>Total Hours</th>
+            <th>Description</th>
+            <th>File</th>
+            <th>Status</th> <!-- Add Status column header -->
+            <th>Actions</th> <!-- Adding a header for approve/reject buttons -->
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var claim in Model)
+        {
+            <tr>
+                <td>@claim.Id</td>
+                <td>@claim.LecturerID</td>
+                <td>@claim.FirstName</td>
+                <td>@claim.LastName</td>
+                <td>@claim.ClaimsPeriodsStart.ToShortDateString()</td>
+                <td>@claim.ClaimsPeriodsEnd.ToShortDateString()</td>
+                <td>@claim.HoursWorked</td>
+                <td>@claim.RateHour</td>
+                <td>@claim.TotalHours</td>
+                <td>@claim.DescriptionOfWork</td>
+                <td>
+                    @if (claim.SupportingDocuments != null && claim.SupportingDocuments.Any())
+                    {
+                        <a href="@Url.Action("DownloadFile", new { id = claim.Id })">Download</a>
+                    }
+                </td>
+                <td>@claim.Status</td> <!-- Display Status value -->
+                <td>
+                    <a href="@Url.Action("Approve", new { id = claim.Id })" class="btn btn-success">Approve</a>
+                    <a href="@Url.Action("Reject", new { id = claim.Id })" class="btn btn-danger">Reject</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Applying the toastrs -->
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+    <style>
+        .toast-custom {
+            font-size: 20px;
+            width: 400px;
+        }
+    </style>
+    <!-- Customize the toastr -->
+    <script>
+        $(document).ready(function () {
+            var message = '@TempData["Message"]';
+            var messageType = '@TempData["MessageType"]';
+            if (message) {
+                toastr.options = {
+                    "positionClass": "toast-bottom-center",
+                    "timeOut": "5000",
+                    "closeButton": true,
+                    "progressBar": true,
+                    "extendedTimeOut": "2000",
+                    "showMethod": "slideDown",
+                    "hideMethod": "slideUp",
+                    "toastClass": "toast-custom"
+                };
+                if (messageType === 'success') {
+                    toastr.success(message, 'Success');
+                } else if (messageType === 'error') {
+                    toastr.error(message, 'Error');
+                }
+            }
+        });
+    </script>
+}
+ *@
+
+
+
+ @model IEnumerable<Prog_P2_claims.Models.Claims>
+@inject Prog_P2_claims.Areas.Identity.Data.ApplicationDbContext _context
+
+@{
+    ViewData["Title"] = "Claims List";
+}
+
+<h2>Claims List</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Lecturer ID</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Period Start</th>
+            <th>Period End</th>
+            <th>Hours Worked</th>
+            <th>Rate per Hour</th>
+            <th>Total Hours</th>
+            <th>Description</th>
+            <th>File</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var claim in Model)
+        {
+            <tr>
+                <td>@claim.Id</td>
+                <td>@claim.LecturerID</td>
+                <td>@claim.FirstName</td>
+                <td>@claim.LastName</td>
+                <td>@claim.ClaimsPeriodsStart.ToShortDateString()</td>
+                <td>@claim.ClaimsPeriodsEnd.ToShortDateString()</td>
+                <td>@claim.HoursWorked</td>
+                <td>@claim.RateHour</td>
+                <td>@claim.TotalHours</td>
+                <td>@claim.DescriptionOfWork</td>
+                <td>
+                    @{
+                        var file = _context.Files.FirstOrDefault(f => f.Id == claim.Id);
+                        if (file != null)
+                        {
+                            <div>
+                                @file.FileName
+                                <a asp-controller="File" asp-action="DownloadFile" asp-route-id="@file.Id" class="btn btn-primary btn-sm" style="margin-top:5px;">
+                                    <i class="fas fa-download"></i> Download
+                                </a>
+                            </div>
+                        }
+                        else
+                        {
+                            <span>No files uploaded</span>
+                        }
+                    }
+                </td>
+                <td>@claim.Status</td>
+                <td>
+                    <a href="@Url.Action("Approve", "Claims", new { id = claim.Id })" class="btn btn-success">Approve</a>
+                    <a href="@Url.Action("Reject", "Claims", new { id = claim.Id })" class="btn btn-danger">Reject</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+    <style>
+        .toast-custom {
+            font-size: 20px;
+            width: 400px;
+        }
+    </style>
+    <script>
+        $(document).ready(function () {
+            var message = '@TempData["Message"]';
+            var messageType = '@TempData["MessageType"]';
+            if (message) {
+                toastr.options = {
+                    "positionClass": "toast-bottom-center",
+                    "timeOut": "5000",
+                    "closeButton": true,
+                    "progressBar": true,
+                    "extendedTimeOut": "2000",
+                    "showMethod": "slideDown",
+                    "hideMethod": "slideUp",
+                    "toastClass": "toast-custom"
+                };
+                if (messageType === 'success') {
+                    toastr.success(message, 'Success');
+                } else if (messageType === 'error') {
+                    toastr.error(message, 'Error');
+                }
+            }
+        });
+    </script>
+}
+
+

@@ -1,0 +1,69 @@
+﻿@model Prog_P2_claims.Models.Claims
+
+@{
+    ViewData["Title"] = "Claim Submitted";
+    var file = ViewBag.File as Prog_P2_claims.Models.FileModel;
+}
+
+<h2>Claim Submitted Successfully</h2>
+
+<p>Thank you for submitting your claim. Here is a summary of your claim:</p>
+
+<table class="table">
+    <tr>
+        <th>Claim ID</th>
+        <td>@Model.Id</td>
+    </tr>
+    <tr>
+        <th>Lecturer ID</th>
+        <td>@Model.LecturerID</td>
+    </tr>
+    <tr>
+        <th>First Name</th>
+        <td>@Model.FirstName</td>
+    </tr>
+    <tr>
+        <th>Last Name</th>
+        <td>@Model.LastName</td>
+    </tr>
+    <tr>
+        <th>Period Start</th>
+        <td>@Model.ClaimsPeriodsStart.ToShortDateString()</td>
+    </tr>
+    <tr>
+        <th>Period End</th>
+        <td>@Model.ClaimsPeriodsEnd.ToShortDateString()</td>
+    </tr>
+    <tr>
+        <th>Hours Worked</th>
+        <td>@Model.HoursWorked</td>
+    </tr>
+    <tr>
+        <th>Rate per Hour</th>
+        <td>@Model.RateHour</td>
+    </tr>
+    <tr>
+        <th>Total Hours</th>
+        <td>@Model.TotalHours</td>
+    </tr>
+    <tr>
+        <th>Description of Work</th>
+        <td>@Model.DescriptionOfWork</td>
+    </tr>
+    @if (file != null)
+    {
+        <tr>
+            <th>Supporting Document</th>
+            <td>
+                @file.FileName
+                <a asp-controller="File" asp-action="DownloadFile" asp-route-id="@file.Id" class="btn btn-primary btn-sm">
+                    <i class="fas fa-download"></i> Download
+                </a>
+            </td>
+        </tr>
+    }
+    <tr>
+        <th>Status</th>
+        <td>@Model.Status</td>
+    </tr>
+</table>
